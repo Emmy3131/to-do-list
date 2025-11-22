@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
 function Header({ title, description, }) {
-
   return (
     <>
       <div className="header">
@@ -14,6 +13,7 @@ function Header({ title, description, }) {
 }
 
 function ToDo() {
+
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem('tasks');
@@ -25,7 +25,7 @@ function ToDo() {
   })
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
-   const [isOpen, setIsOpen] = useState('')
+  const [isOpen, setIsOpen] = useState('')
 
   const toggleComplete = (index) => {
     const updtateTasks = [...tasks];
@@ -61,7 +61,7 @@ function ToDo() {
   }
 
   const handleTaskView = () => {
-    setIsOpen(prev =>!prev)
+    setIsOpen(prev => !prev)
   }
   return (
     <div className="todo">
@@ -85,17 +85,28 @@ function ToDo() {
         {isOpen && (
           <ul className="tasks">
             <h2>My ToDo List</h2>
-            {tasks.map((item, index) => (
-              <li key={index} className={item.completed ? 'task completed' : 'task'}>
 
-                <input className="checkbox" type="checkbox" checked={item.completed} onChange={(e) => toggleComplete(index)} />
-                <p> <span className="date">Task:</span> {item.name}</p>
-                <p> <span className="date">Date:</span> {item.date}</p>
-                <p> <span className="date">Time:  </span>{item.time}</p>
-                <FaTrash className="trash" onClick={() => deleteTask(index)} />
+            {tasks.map((item, index) => (
+              <li key={index} className={`task ${item.completed ? 'completed' : ''}`}>
+                <div className="left">
+                  <input
+                    type="checkbox"
+                    checked={item.completed}
+                    onChange={() => toggleComplete(index)}
+                  />
+                  <div className="task-details">
+                    <p className="task-name">{item.name}</p>
+                    <small className="meta">
+                      <span>{item.date}</span> • <span>{item.time}</span>
+                    </small>
+                  </div>
+                </div>
+
+                <FaTrash className="delete" onClick={() => deleteTask(index)} />
               </li>
             ))}
           </ul>
+
         )}
       </div>
     </div>
@@ -103,8 +114,27 @@ function ToDo() {
 }
 
 function App() {
+   const [darkMode, setDarkMode] = useState(false);
+    useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") setDarkMode(true);
+  }, []);
+
+   const toggleDarkMode = () => {
+    setDarkMode(prev => {
+      const newTheme = !prev;
+      localStorage.setItem("theme", newTheme ? "dark" : "light");
+      return newTheme;
+    });
+  };
+
   return (
-    <div className="App">
+
+    <div className={`App ${darkMode ? "dark-mode" : "light-mode"}`}>
+      <button className="toggle-theme" onClick={toggleDarkMode}>
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </button>
+
       <ToDo />
     </div>
   );
